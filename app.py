@@ -1,6 +1,11 @@
 from peewee import *
 from flask import Flask, jsonify, request
-from playhouse.shortcuts import model_to_dict, dict_to_model
+from playhouse.shortcuts import model_to_dict, dict_to_model, connect
+import os
+
+
+  
+DATABASE = connect(os.environ.get('DATABASE_URL'))
 
 db = PostgresqlDatabase('legos', user='stacey', password='',
                         host='localhost', port=5432)
@@ -25,6 +30,9 @@ class Creator(BaseModel):
     name = CharField()
     age = IntegerField()
 
+if 'ON_HEROKU' in os.environ:
+  db.create_tables([Sets])
+  db.create_tables([Creator])
 
 db.create_tables([Sets])
 db.drop_tables([Sets])
