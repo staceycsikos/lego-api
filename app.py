@@ -1,14 +1,9 @@
 from peewee import *
 from flask import Flask, jsonify, request
-from playhouse.shortcuts import model_to_dict, dict_to_model, connect
-import os
+from playhouse.shortcuts import model_to_dict, dict_to_model
 
-
-  
-DATABASE = connect(os.environ.get('DATABASE_URL'))
-
-db = PostgresqlDatabase('legos', user='stacey', password='',
-                        host='localhost', port=5432)
+db = PostgresqlDatabase('daiul39605bhds', user="iuequlwttmnjxu", password="fa56a1a7759d77d10c1c082c6beced0b560132ad02fe59839a1f27e2dbf26ab9",
+                        host='ec2-3-223-213-207.compute-1.amazonaws.com', port=5432)
 
 db.connect()
 
@@ -30,9 +25,6 @@ class Creator(BaseModel):
     name = CharField()
     age = IntegerField()
 
-if 'ON_HEROKU' in os.environ:
-  db.create_tables([Sets])
-  db.create_tables([Creator])
 
 db.create_tables([Sets])
 db.drop_tables([Sets])
@@ -99,19 +91,19 @@ def endpoint(id=None):
 @app.route('/creator/<id>', methods=['GET', 'PUT', 'DELETE'])
 def endpointer(id=None):
     if request.method == 'GET':
-      if id:
-        sets = Sets.select().where(Sets.creator_id == id).execute()
-        jsets = []
-        for set in sets:
-            jsets.append(model_to_dict(set))
-        creator = model_to_dict(Creator.get_by_id(id))
+        if id:
+            sets = Sets.select().where(Sets.creator_id == id).execute()
+            jsets = []
+            for set in sets:
+                jsets.append(model_to_dict(set))
+            creator = model_to_dict(Creator.get_by_id(id))
 
-        return jsonify({'creator': creator, 'sets': jsets})
-      else:
-        creator_list = []
-        for unit in Creator.select():
-          creator_list.append(model_to_dict(unit))
-        return jsonify(creator_list)
+            return jsonify({'creator': creator, 'sets': jsets})
+        else:
+            creator_list = []
+            for unit in Creator.select():
+                creator_list.append(model_to_dict(unit))
+            return jsonify(creator_list)
     if request.method == 'PUT':
         data = request.get_json()
         Creator.update(data).where(Creator.id == id).execute()
@@ -127,4 +119,4 @@ def endpointer(id=None):
         return jsonify({"Deleted?": "It's been deleted!"})
 
 
-app.run(debug=True, port=9000)
+app.run(debug=True, host="0.0.0.0")
